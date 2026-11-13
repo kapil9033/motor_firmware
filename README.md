@@ -1,34 +1,43 @@
 # Modular Motor Control Firmware
 
-High-performance motor control firmware structured with a strict Layered Architecture for scalability across different MCUs and inverter boards.
+High-performance motor-control firmware organized in layers for portability
+across MCUs and inverter boards.
 
 ## Directory Structure
 ```text
 motor_firmware/
-├── include/           # Central configuration (board.h)
-├── src/               # Application logic and main entry point
-├── hal/               # Hardware Abstraction Layer
-│   ├── include/       # Abstract HAL interface definitions
-│   ├── stm32f4/       # Current MCU implementation (STM32F439)
-│   └── stm32g4/       # Future MCU stub (STM32G4)
-├── drivers/           # Power electronics and bridge drivers
-│   ├── drv8312/       # Current driver (TI DRV8312EVM)
-│   └── future_driver/ # Future driver stub
-└── README.md~
+├── include/                 # Shared board configuration
+├── src/                     # Application entry point
+├── hal/
+│   ├── include/             # MCU-independent HAL interface
+│   └── stm32f4/             # STM32F439 HAL implementation and config
+├── drivers/
+│   ├── drv8312/             # TI DRV8312 bridge driver
+│   ├── encoder/             # Encoder driver
+│   └── future_driver/       # Future driver stub
+└── third_party/stm32cube/   # Bundled STM32F4 HAL and CMSIS dependencies
 ```
 
 ## Build
 
-The CMake build compiles the firmware and its STM32F4 HAL dependencies into
-`libmotor_firmware.a`. The required STM32F4 HAL and CMSIS files are included in
-`third_party/stm32cube`, so a separate STM32CubeF4 installation is not needed.
-Configure with the `arm-none-eabi-gcc` toolchain. To use a different local
-STM32CubeF4 package, set `STM32CUBE_F4_ROOT` to its `Drivers` directory and
-`STM32_HAL_CONFIG_DIR` to the directory containing `stm32f4xx_hal_conf.h`.
+Install CMake, GNU Make, and the `arm-none-eabi-gcc` toolchain. The STM32F4 HAL
+and CMSIS files needed by this project are bundled in `third_party/stm32cube`;
+a separate STM32CubeF4 installation is not required.
 
-The archive is compile-verified but is not a flashable firmware image. A
-device-specific startup file and linker script are needed to link an ELF for
-the exact STM32F439 part.
+Configure and build from the repository root:
 
-The bundled STMicroelectronics HAL and CMSIS components retain their license
-notices in `third_party/stm32cube/Drivers`.
+```sh
+cmake -S . -B build -DCMAKE_C_COMPILER=arm-none-eabi-gcc
+cmake --build build
+```
+
+The build produces `build/libmotor_firmware.a`. If using another local
+STM32CubeF4 package, pass its `Drivers` directory as `STM32CUBE_F4_ROOT` and
+the directory containing `stm32f4xx_hal_conf.h` as `STM32_HAL_CONFIG_DIR`.
+
+The archive is compile-verified but is not a flashable firmware image. Linking
+a firmware ELF requires a startup file and linker script for the exact target
+STM32F439 device.
+
+The bundled STMicroelectronics HAL and CMSIS components retain their license notices
+in `third_party/stm32cube/Drivers`.
