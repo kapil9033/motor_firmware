@@ -13,18 +13,9 @@ set(STM32CUBE_F4_ROOT "" CACHE PATH
 set(STM32_HAL_CONFIG_DIR "" CACHE PATH
     "Directory containing the application's stm32f4xx_hal_conf.h")
 
-# Reuse a nearby STM32CubeF4 installation when no path is specified.
 if(NOT STM32CUBE_F4_ROOT)
-    set(_stm32cube_candidates
-        "${CMAKE_CURRENT_SOURCE_DIR}/../stm32f446_rtos_sensor_node/Drivers"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../stm32_cpp20_fsm/Drivers"
-    )
-    foreach(_candidate IN LISTS _stm32cube_candidates)
-        if(EXISTS "${_candidate}/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h")
-            set(STM32CUBE_F4_ROOT "${_candidate}")
-            break()
-        endif()
-    endforeach()
+    set(STM32CUBE_F4_ROOT
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/stm32cube/Drivers")
 endif()
 
 if(NOT EXISTS "${STM32CUBE_F4_ROOT}/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h")
@@ -33,10 +24,7 @@ if(NOT EXISTS "${STM32CUBE_F4_ROOT}/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h")
 endif()
 
 if(NOT STM32_HAL_CONFIG_DIR)
-    get_filename_component(_stm32cube_project_root "${STM32CUBE_F4_ROOT}" DIRECTORY)
-    if(EXISTS "${_stm32cube_project_root}/Core/Inc/stm32f4xx_hal_conf.h")
-        set(STM32_HAL_CONFIG_DIR "${_stm32cube_project_root}/Core/Inc")
-    endif()
+    set(STM32_HAL_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hal/stm32f4/include")
 endif()
 
 if(NOT EXISTS "${STM32_HAL_CONFIG_DIR}/stm32f4xx_hal_conf.h")
@@ -62,6 +50,7 @@ endif()
 
 set(STM32_HAL_MODULES
     stm32f4xx_hal
+    stm32f4xx_hal_cortex
     stm32f4xx_hal_adc
     stm32f4xx_hal_adc_ex
     stm32f4xx_hal_dac
