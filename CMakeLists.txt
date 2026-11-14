@@ -294,12 +294,16 @@ add_custom_command(TARGET d9_led_test_nucleo_f446re.elf POST_BUILD
 add_executable(stepper_28byj48_nucleo_f446re.elf
     src/stepper_28byj48_demo.c
     src/syscalls.c
+    drivers/stepper/stepper_28byj48.c
+    hal/nucleo_f446re/stepper_gpio_stm32f446re.c
     "${STM32_CMSIS_SYSTEM_SOURCE}"
     "${STM32F446_STARTUP_SOURCE}"
     ${STM32F446_SERVO_HAL_SOURCES}
 )
 
 target_include_directories(stepper_28byj48_nucleo_f446re.elf PRIVATE
+    hal/include
+    drivers/stepper
     "${STM32_HAL_CONFIG_DIR}"
     "${STM32CUBE_F4_ROOT}/STM32F4xx_HAL_Driver/Inc"
     "${STM32CUBE_F4_ROOT}/STM32F4xx_HAL_Driver/Inc/Legacy"

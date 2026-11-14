@@ -10,10 +10,11 @@ motor_firmware/
 ├── drivers/
 │   ├── drv8312/             # TI DRV8312 bridge driver
 │   ├── encoder/             # Encoder driver
-│   └── servo/               # SG90 servo driver
+│   ├── servo/               # SG90 servo driver
+│   └── stepper/             # 28BYJ-48 stepper driver
 ├── hal/
 │   ├── include/             # MCU-independent HAL interfaces
-│   ├── nucleo_f446re/       # NUCLEO-F446RE PWM implementation
+│   ├── nucleo_f446re/       # NUCLEO-F446RE servo PWM and stepper GPIO
 │   └── stm32f4/             # STM32F439 HAL implementation and config
 ├── include/                 # Shared board configuration
 ├── src/                     # Application entry points
@@ -146,6 +147,14 @@ power off, wire the ULN2003 inputs to the NUCLEO-F446RE:
 | IN4 | D5 / PB4 |
 | `+` / VCC | Regulated external 5 V |
 | `-` / GND | External supply GND and NUCLEO GND |
+
+The portable 28BYJ-48 driver in `drivers/stepper/` advances an eight-phase
+half-step sequence through the MCU-independent interface in
+`hal/include/stepper_interface.h`. The NUCLEO-F446RE GPIO implementation maps
+that interface to the selected pins; the demo only initializes the driver,
+steps it, delays between steps, and releases the coils. This keeps hardware
+access out of the motor driver and application, following the same layered
+pattern as the SG90 driver.
 
 The test firmware drives IN1–IN4 in an eight-phase half-step sequence. It
 rotates about one output revolution clockwise, de-energizes the coils for one
